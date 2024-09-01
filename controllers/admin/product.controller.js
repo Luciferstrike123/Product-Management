@@ -1,8 +1,8 @@
-const Product = require('../../models/product.model')
-const filterStatusHelper = require('../../helpers/filterStatus')
-const searchHelper = require('../../helpers/search')
-const paginationHelper = require('../../helpers/pagination')
-const systemConfig = require('../../config/system')
+const Product = require('../../models/product.model');
+const filterStatusHelper = require('../../helpers/filterStatus');
+const searchHelper = require('../../helpers/search');
+const paginationHelper = require('../../helpers/pagination');
+const systemConfig = require('../../config/system');
 
 // [GET] /admin/dashboard
 module.exports.index = async (req, res) => {
@@ -11,27 +11,27 @@ module.exports.index = async (req, res) => {
     }
 
     //Filter Feature
-    const filterStatus = filterStatusHelper(req, find)
+    const filterStatus = filterStatusHelper(req, find);
     /*console.log(filterStatus)*/
     
     // End Filter Feature
 
     // Search Feature
-    const keyword = searchHelper(req, find)
+    const keyword = searchHelper(req, find);
     // End Search Feature
 
     //Pagination
-    const countProducts = await Product.countDocuments(find)
+    const countProducts = await Product.countDocuments(find);
     let objectPagination = paginationHelper(req, {
         limitItems: 4,
         currentPage: 1
-    }, countProducts)
+    }, countProducts);
     //End Pagination
 
     const products = await Product.find(find)
         .sort({position: "asc"})
         .limit(objectPagination.limitItems)
-        .skip(objectPagination.skip) 
+        .skip(objectPagination.skip);
     //console.log(products)
     
     res.render('admin/pages/products/index', {
@@ -45,12 +45,12 @@ module.exports.index = async (req, res) => {
 
 // [PATCH] /admin/change-status/:status/:id
 module.exports.changeStatus = async (req, res) => {
-    const status = req.params.status
-    const id = req.params.id
+    const status = req.params.status;
+    const id = req.params.id;
 
-    await Product.updateOne({_id: id}, {status: status})
+    await Product.updateOne({_id: id}, {status: status});
     req.flash('success', 'Cập nhật trạng thái thành công');
-    res.redirect("back")
+    res.redirect("back");
 }
 
 // [PATCH] /admin/change-multi
@@ -89,7 +89,7 @@ module.exports.changeMulti = async (req, res) => {
 
 //[DELETE] /admin/products/delete/:id
 module.exports.deleteItem = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
 
     //await Product.deleteOne({_id: id})
     await Product.updateOne(
@@ -98,7 +98,7 @@ module.exports.deleteItem = async (req, res) => {
             deletedAt: new Date()
         },
     )
-    res.redirect("back")
+    res.redirect("back");
 }
 
 // [GET] /admin/products/create
@@ -112,26 +112,26 @@ module.exports.create = (req, res) => {
 module.exports.createPost = async (req, res) => {
     //console.log(req.file)
     
-    req.body.price = parseInt(req.body.price)
-    req.body.discountPercentage = parseInt(req.body.discountPercentage)
-    req.body.stock = parseInt(req.body.stock)
+    req.body.price = parseInt(req.body.price);
+    req.body.discountPercentage = parseInt(req.body.discountPercentage);
+    req.body.stock = parseInt(req.body.stock);
 
     if(req.body.position == '') {
-        const countProducts = await Product.countDocuments({})
-        req.body.position = countProducts + 1
+        const countProducts = await Product.countDocuments({});
+        req.body.position = countProducts + 1;
     }
     else {
-        req.body.position = parseInt(req.body.position)
+        req.body.position = parseInt(req.body.position);
     }
     
-    if(req.file)
-        req.body.thumbnail = `/uploads/${req.file.filename}`
-    else
-        req.body.thumbnail = '';
-    const product = new Product(req.body)
-    await product.save()
+    // if(req.file)
+    //     req.body.thumbnail = `/uploads/${req.file.filename}`;
+    // else
+    //     req.body.thumbnail = '';
+    const product = new Product(req.body);
+    await product.save();
     
-    res.redirect(`${systemConfig.prefixAdmin}/products`)
+    res.redirect(`${systemConfig.prefixAdmin}/products`);
 }
 
 //[GET] /admin/products/edit/:id
